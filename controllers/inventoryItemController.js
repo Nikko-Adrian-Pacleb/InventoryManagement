@@ -42,6 +42,7 @@ exports.create_inventoryitem_get = asyncHandler(async (req, res, next) => {
 // @route POST /inventory/inventoryitem/create
 // @access Private
 exports.create_inventoryitem_post = [
+  // Validate and Sanitize fields
   body("itemName")
     .trim()
     .isLength({ min: 1 })
@@ -60,6 +61,8 @@ exports.create_inventoryitem_post = [
   body("itemDescription").optional().isString().trim().escape(),
   body("currentCount").optional().isNumeric(),
   body("tags").optional().isArray(),
+
+  // Process request after validation and sanitazion
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -67,6 +70,7 @@ exports.create_inventoryitem_post = [
     }
 
     try {
+      // Create a new Inventory Object with the escaped and trimmed data
       const newItem = new InventoryItem(req.body);
       await newItem.save();
       res.status(201).json(newItem);

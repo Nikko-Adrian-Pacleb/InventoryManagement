@@ -22,9 +22,11 @@ InventoryTransactionSchema.pre("save", async function (next) {
       );
 
       if (!inventoryItem) {
+        // If Invenotry Item Doesnt Exist
         throw new Error("Inventory item not found");
       }
 
+      // Check what transaction type is requested
       if (transaction.transactionType === "add") {
         inventoryItem.currentCount += transaction.quantity;
       } else if (transaction.transactionType === "remove") {

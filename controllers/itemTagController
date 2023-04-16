@@ -40,11 +40,14 @@ exports.create_itemtag_get = asyncHandler(async (req, res, next) => {
 // @route POST /inventory/itemtag/create
 // @access Private
 exports.create_itemtag_post = [
+  // Validate and Sanitize fields
   body("tagName")
     .trim()
     .isLength({ min: 1 })
     .escape()
     .withMessage("Tag Name must be specified"),
+
+  // Process request after validation and sanitazion
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

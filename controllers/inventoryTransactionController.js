@@ -45,6 +45,7 @@ exports.create_inventorytransaction_get = asyncHandler(
 // @route POST /inventory/inventorytransaction/create
 // @access Private
 exports.create_inventorytransaction_post = [
+  // Validate and Sanitize fields
   body("inventoryItem")
     .trim()
     .isLength({ min: 1 })
@@ -62,6 +63,8 @@ exports.create_inventorytransaction_post = [
     .isNumeric()
     .withMessage("Quantity must be a number"),
   body("transactionDate").optional().isISO8601().toDate(),
+
+  // Process request after validation and sanitazion
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -73,6 +76,7 @@ exports.create_inventorytransaction_post = [
         req.body.inventoryItem
       );
       if (!inventoryItem) {
+        // Inventory Item is not found
         return res.status(404).json({ error: "Inventory item not found" });
       }
 
