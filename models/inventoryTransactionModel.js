@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const InventoryItem = require("./inventoryItemModel");
 
 const InventoryTransactionSchema = new mongoose.Schema({
   inventoryItem: {
@@ -11,28 +12,30 @@ const InventoryTransactionSchema = new mongoose.Schema({
   transactionDate: { type: Date, default: Date.now },
 });
 
-inventoryTransactionSchema.pre("save", async function (next) {
+InventoryTransactionSchema.pre("save", async function (next) {
   try {
-    const transaction = this;
-    const inventoryItem = await InventoryItem.findById(
-      transaction.inventoryItem
-    );
+    // Check if the request is a creation of a new Transactio or an Update
+    if (this.isNew) {
+      const transaction = this;
+      const inventoryItem = await InventoryItem.findById(
+        transaction.inventoryItem
+      );
 
-    if (!inventoryItem) {
-      throw new Error("Inventory item not found");
-    }
-
-    if (transaction.transactionType === "add") {
-      inventoryItem.count += transaction.quantity;
-    } else if (transaction.transactionType === "remove") {
-      inventoryItem.count -= transaction.quantity;
-
-      if (inventoryItem.count < 0) {
-        throw new Error("Insufficient inventory");
+      if (!inventoryItem) {
+        throw new Error("Inventory item not found");
       }
-    }
 
-    await inventoryItem.save();
+      if (transaction.transactionType === "add") {
+        inventoryItem.currentCount += transaction.quantity;
+      } else if (transaction.transactionType === "remove") {
+        inventoryItem.currentCount -= transaction.quantity;
+
+        if (inventoryItem.count < 0) {
+          throw new Error("Insufficient inventory");
+        }
+      }
+      await inventoryItem.save();
+    }
     next();
   } catch (error) {
     next(error);

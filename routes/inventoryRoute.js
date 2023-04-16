@@ -5,6 +5,7 @@ const router = express.Router();
 const inventoryController = require("../controllers/inventoryController");
 const inventoryItemController = require("../controllers/inventoryItemController");
 const itemTagController = require("../controllers/itemTagController");
+const inventoryTransactionController = require("../controllers/inventoryTransactionController");
 
 /// INVENTORY ROUTER ///
 
@@ -82,5 +83,55 @@ router.get("/itemtag/:id", itemTagController.itemtag_detail);
 
 // GET request for list of all Tags.
 router.get("/itemtags", itemTagController.itemtag_all);
+
+/// INVENTORY TRANSACTION ///
+
+// GET request for creating Inventory Transaction
+router.get(
+  "/inventorytransaction/create",
+  inventoryTransactionController.create_inventorytransaction_get
+);
+
+// POST request for creating Inventory Transaction.
+router.post(
+  "/inventorytransaction/create",
+  inventoryTransactionController.create_inventorytransaction_post
+);
+
+// GET request to delete Inventory Transaction.
+router.get(
+  "/inventorytransaction/:id/delete",
+  inventoryTransactionController.delete_inventorytransaction_get
+);
+
+// POST request to delete Inventory Transaction.
+router.post(
+  "/inventorytransaction/:id/delete",
+  inventoryTransactionController.delete_inventorytransaction_post
+);
+
+// GET request to update Inventory Transaction.
+router.get(
+  "/inventorytransaction/:id/update",
+  inventoryTransactionController.update_inventorytransaction_get
+);
+
+// POST request to update Inventory Transaction.
+router.post(
+  "/inventorytransaction/:id/update",
+  inventoryTransactionController.update_inventorytransaction_post
+);
+
+// GET request for one Inventory Transaction.
+router.get(
+  "/inventorytransaction/:id",
+  inventoryTransactionController.inventorytransaction_detail
+);
+
+// GET request for list of all Inventory Transactions.
+router.get(
+  "/inventorytransactions",
+  inventoryTransactionController.inventorytransaction_all
+);
 
 module.exports = router;

@@ -52,7 +52,11 @@ exports.create_inventoryitem_post = [
     .isLength({ min: 1 })
     .escape()
     .withMessage("Item Code must be specified"),
-  body("itemCost").isNumeric().withMessage("Item cost must be a number"),
+  body("itemCost")
+    .trim()
+    .escape()
+    .isNumeric()
+    .withMessage("Item cost must be a number"),
   body("itemDescription").optional().isString().trim().escape(),
   body("currentCount").optional().isNumeric(),
   body("tags").optional().isArray(),
