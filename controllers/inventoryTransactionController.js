@@ -127,8 +127,58 @@ exports.update_inventorytransaction_get = (req, res, next) => {
 };
 
 // @desc Update an Inventory Transaction
+// Inventory Transaction delete wont revert changes on Inventory Item
 // @route POST /inventory/inventorytransaction/:id/update
 // @access Private
-exports.update_inventorytransaction_post = (req, res, next) => {
-  res.send("Update Inventory Transaction not yet implemented");
-};
+exports.update_inventorytransaction_post = [
+  // Validate and Sanitize fields
+  body("inventoryItem")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Iventory Item must be specified"),
+  body("transactionType")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .isIn(["add", "remove"])
+    .withMessage("Transaction Type must be 'add' or 'remove'"),
+  body("quantity")
+    .trim()
+    .escape()
+    .isNumeric()
+    .withMessage("Quantity must be a number"),
+  body("transactionDate").optional().isISO8601().toDate(),
+
+  // Process request after validation and sanitazion
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const inventoryItem = await InventoryItem.findById(
+        req.body.inventoryItem
+      );
+      if (!inventoryItem) {
+        // Inventory Item is not found
+        return res.status(404).json({ error: "Inventory item not found" });
+      }
+
+      // Add the original id
+      req.body._id = req.params.id;
+
+      // Create new Inventory Transaction
+      const updateInventoryTransaction = new InventoryTransaction(req.body);
+      // Update Inventory Transaction
+      await InventoryTransaction.findByIdAndUpdate(
+        req.params.id,
+        updateInventoryTransaction
+      );
+      res.redirect(`/inventory/inventorytransaction/${req.params.id}`);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }),
+];
