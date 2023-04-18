@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const InventoryItem = require("../models/inventoryItemModel");
 
+const debug = require("debug")("iteminventory");
+
 // @desc Get all Inventory Item
 // @route GET /inventory/inventoryitems/
 // @access Private
@@ -10,6 +12,7 @@ exports.inventoryitem_all = asyncHandler(async (req, res, next) => {
     const inventoryItems = await InventoryItem.find();
     res.json(inventoryItems);
   } catch (error) {
+    debug(`catch called error: ${error.message}`);
     res.status(400).json({ error: error.message });
   }
 });
@@ -23,10 +26,12 @@ exports.inventoryitem_detail = asyncHandler(async (req, res, next) => {
       "tags"
     );
     if (!inventoryItem) {
+      debug(`id not found on detail: ${req.params.id}`);
       return res.status(404).json({ error: "Inventory item not found" });
     }
     res.json(inventoryItem);
   } catch (error) {
+    debug(`catch called error: ${error.message}`);
     res.status(400).json({ error: error.message });
   }
 });
@@ -67,6 +72,7 @@ exports.create_inventoryitem_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      debug(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -76,6 +82,7 @@ exports.create_inventoryitem_post = [
       await newItem.save();
       res.status(201).json(newItem);
     } catch (error) {
+      debug(error.message);
       res.status(400).json({ error: error.message });
     }
   }),
@@ -97,12 +104,14 @@ exports.delete_inventoryitem_post = asyncHandler(async (req, res, next) => {
     const inventoryItem = await InventoryItem.findById(req.params.id);
     if (!inventoryItem) {
       // Inventory Item doesnt exist
+      debug(`Id not found on delete: ${req.params.id}`);
       res.status(404).json({ error: "Inventory Item not found" });
     }
     // When Inventory Item exist DELETE
     await InventoryItem.findByIdAndDelete(req.params.id);
     res.redirect("/inventory/inventoryitems");
   } catch (error) {
+    debuf(error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -144,6 +153,7 @@ exports.update_inventoryitem_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      debug(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -155,6 +165,7 @@ exports.update_inventoryitem_post = [
       await InventoryItem.findByIdAndUpdate(req.params.id, updateItem);
       res.redirect(`/inventory/inventoryitem/${req.params.id}`);
     } catch (error) {
+      debug(error.message);
       res.status(400).json({ error: error.message });
     }
   }),

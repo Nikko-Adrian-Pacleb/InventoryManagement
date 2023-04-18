@@ -5,6 +5,8 @@ const { body, validationResult } = require("express-validator");
 const ItemTag = require("../models/itemTagModel");
 const InventoryItem = require("../models/inventoryItemModel");
 
+const debug = require("debug")("itemtag");
+
 // @desc Get all tags
 // @route GET /inventory/itemtags/
 // @access Private
@@ -13,6 +15,7 @@ exports.itemtag_all = asyncHandler(async (req, res, next) => {
     const itemTags = await ItemTag.find();
     res.json(itemTags);
   } catch (error) {
+    debug(error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -24,10 +27,13 @@ exports.itemtag_detail = asyncHandler(async (req, res, next) => {
   try {
     const itemTag = await ItemTag.findById(req.params.id);
     if (!itemTag) {
+      // Item Tag not found
+      debug(`id not found on detail: ${req.params.id}`);
       return res.status(404).json({ error: "Inventory item not found" });
     }
     res.json(itemTag);
   } catch (error) {
+    debug(error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -55,6 +61,7 @@ exports.create_itemtag_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      debug(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -63,7 +70,8 @@ exports.create_itemtag_post = [
       await newTag.save();
       res.status(201).json(newTag);
     } catch (error) {
-      res.status(400).json({ errors: errors.message });
+      debug(error.message);
+      res.status(400).json({ error: error.message });
     }
   }),
 ];
@@ -86,11 +94,13 @@ exports.delete_itemtag_post = asyncHandler(async (req, res, next) => {
 
     if (!itemTag) {
       // Item Tag is not found
+      debug(`id not found on delete: ${req.params.id}`);
       return res.status(404).json({ error: "Item Tag not found" });
     }
 
     if (inventoryItems.length > 0) {
       // Tag is currently used by other items
+      debug(`Tag is currently in use by item/s`);
       return res.status(409).json({
         error: "Tag is currently in use by an Item",
         inventoryItems,
@@ -100,8 +110,9 @@ exports.delete_itemtag_post = asyncHandler(async (req, res, next) => {
     const itemTags = await ItemTag.find();
     await ItemTag.findByIdAndDelete(req.params.id);
     res.redirect("/inventory/itemtags");
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    debug(error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -129,6 +140,7 @@ exports.update_itemtag_post = [
 
     if (!errors.isEmpty) {
       // There are errors
+      debug(errors.array());
       return res.status(400).json({ errors: errors.array });
     }
 
@@ -138,8 +150,9 @@ exports.update_itemtag_post = [
       const updateItemTag = new ItemTag(req.body);
       await ItemTag.findByIdAndUpdate(req.params.id, updateItemTag);
       res.redirect(`/inventory/itemtag/${req.params.id}`);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
+    } catch (error) {
+      debug(error.message);
+      res.status(400).json({ error: error.message });
     }
   }),
 ];

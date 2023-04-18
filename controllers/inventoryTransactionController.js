@@ -3,6 +3,8 @@ const { body, validationResult } = require("express-validator");
 const InventoryTransaction = require("../models/inventoryTransactionModel");
 const InventoryItem = require("../models/inventoryItemModel");
 
+const debug = require("debug")("inventorytransaction");
+
 // @desc Get all Inventory Transactions
 // @route GET /inventory/inventorytransaction/
 // @access Private
@@ -11,6 +13,7 @@ exports.inventorytransaction_all = asyncHandler(async (req, res, next) => {
     const inventoryTransactions = await InventoryTransaction.find();
     res.json(inventoryTransactions);
   } catch (error) {
+    debug(error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -24,10 +27,12 @@ exports.inventorytransaction_detail = asyncHandler(async (req, res, next) => {
       req.params.id
     );
     if (!inventoryTransaction) {
+      debug(`id not found on detail: ${req.params.id}`);
       return res.status(404).json({ error: "Inventory Transaction not found" });
     }
     res.json(inventoryTransaction);
   } catch (error) {
+    debug(error.message);
     res.status(400).json({ error: error.message });
   }
 });
@@ -69,6 +74,7 @@ exports.create_inventorytransaction_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      debug(errors.array);
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -78,6 +84,7 @@ exports.create_inventorytransaction_post = [
       );
       if (!inventoryItem) {
         // Inventory Item is not found
+        debug(`id not found on create: ${req.params.id}`);
         return res.status(404).json({ error: "Inventory item not found" });
       }
 
@@ -85,6 +92,7 @@ exports.create_inventorytransaction_post = [
       await newInventoryTransaction.save();
       res.status(201).json(newInventoryTransaction);
     } catch (error) {
+      debug(error.message);
       res.status(400).json({ error: error.message });
     }
   }),
@@ -110,12 +118,14 @@ exports.delete_inventorytransaction_post = asyncHandler(
       );
       if (!inventoryTransaction) {
         // Inventory Transaction not found
+        debug(`id not found on delete: ${req.params.id}`);
         return res.status(404).json({ error: "Inventory item not found" });
       }
       // Try to delete Inventory Transaction
       await InventoryTransaction.findByIdAndDelete(req.params.id);
       res.redirect("/inventory/inventorytransactions");
     } catch (error) {
+      debug(error.message);
       res.status(400).json({ error: error.message });
     }
   }
@@ -157,6 +167,7 @@ exports.update_inventorytransaction_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      debug(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -166,6 +177,7 @@ exports.update_inventorytransaction_post = [
       );
       if (!inventoryItem) {
         // Inventory Item is not found
+        debug(`id not found on update: ${req.params.id}`);
         return res.status(404).json({ error: "Inventory item not found" });
       }
 
@@ -181,6 +193,7 @@ exports.update_inventorytransaction_post = [
       );
       res.redirect(`/inventory/inventorytransaction/${req.params.id}`);
     } catch (error) {
+      debug(error.message);
       res.status(400).json({ error: error.message });
     }
   }),
