@@ -24,7 +24,7 @@ exports.inventorytransaction_detail = asyncHandler(async (req, res, next) => {
       req.params.id
     );
     if (!inventoryTransaction) {
-      return res.status(404).json({ error: "Inventory item not found" });
+      return res.status(404).json({ error: "Inventory Transaction not found" });
     }
     res.json(inventoryTransaction);
   } catch (error) {
@@ -97,11 +97,27 @@ exports.delete_inventorytransaction_get = (req, res, next) => {
 };
 
 // @desc Delete an Inventory Transaction
+// Inventory Transaction delete wont revert changes on Inventory Item
 // @route POST /inventory/inventorytransaction/:id/delete
 // @access Private
-exports.delete_inventorytransaction_post = (req, res, next) => {
-  res.send("Delete Inventory Transaction not yet implemented");
-};
+exports.delete_inventorytransaction_post = asyncHandler(
+  async (req, res, next) => {
+    try {
+      const inventoryTransaction = await InventoryTransaction.findById(
+        req.params.id
+      );
+      if (!inventoryTransaction) {
+        // Inventory Transaction not found
+        return res.status(404).json({ error: "Inventory item not found" });
+      }
+      // Try to delete Inventory Transaction
+      await InventoryTransaction.findByIdAndDelete(req.params.id);
+      res.redirect("/inventory/inventorytransactions");
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+);
 
 // @desc Update an Inventory Transaction
 // @route GET /inventory/inventorytransaction/:id/update

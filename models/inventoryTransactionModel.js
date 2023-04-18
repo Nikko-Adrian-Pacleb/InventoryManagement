@@ -32,7 +32,7 @@ InventoryTransactionSchema.pre("save", async function (next) {
       } else if (transaction.transactionType === "remove") {
         inventoryItem.currentCount -= transaction.quantity;
 
-        if (inventoryItem.count < 0) {
+        if (inventoryItem.currentCount < 0) {
           throw new Error("Insufficient inventory");
         }
       }

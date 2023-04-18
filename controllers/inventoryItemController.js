@@ -90,9 +90,20 @@ exports.delete_inventoryitem_get = (req, res, next) => {
 // @desc Delete an Inventory Item
 // @route POST /inventory/inventoryitem/:id/delete
 // @access Private
-exports.delete_inventoryitem_post = (req, res, next) => {
-  res.send("Delete Inventory Item not yet implemented");
-};
+exports.delete_inventoryitem_post = asyncHandler(async (req, res, next) => {
+  try {
+    const inventoryItem = await InventoryItem.findById(req.params.id);
+    if (!inventoryItem) {
+      // Inventory Item doesnt exist
+      res.status(404).json({ error: "Inventory Item not found" });
+    }
+    // When Inventory Item exist DELETE
+    await InventoryItem.findByIdAndDelete(req.params.id);
+    res.redirect("/inventory/inventoryitems");
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 // @desc Update an Inventory Item
 // @route GET /inventory/inventoryitem/:id/update
