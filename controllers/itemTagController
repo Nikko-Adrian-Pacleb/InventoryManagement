@@ -32,6 +32,7 @@ exports.itemtag_detail = asyncHandler(async (req, res, next) => {
   }
 });
 
+/// !!! Not Yet implemented ///
 // @desc Render the form for creating a new Item Tag
 // @route GET /inventory/itemtag/create
 // @access Private
@@ -67,6 +68,7 @@ exports.create_itemtag_post = [
   }),
 ];
 
+/// !!! Not Yet implemented ///
 // @desc Delete an Item Tag
 // @route GET /inventory/itemtag/:id/delete
 // @access Private
@@ -103,6 +105,7 @@ exports.delete_itemtag_post = asyncHandler(async (req, res, next) => {
   }
 });
 
+/// !!! Not Yet implemented ///
 // @desc Update an Item Tag
 // @route GET /inventory/itemtag/:id/update
 // @access Private

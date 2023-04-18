@@ -31,6 +31,7 @@ exports.inventoryitem_detail = asyncHandler(async (req, res, next) => {
   }
 });
 
+/// !!! Not Yet implemented ///
 // @desc Render the form for creating a new Inventory Item
 // @route GET /inventory/inventoryitem/create
 // @access Private
@@ -80,6 +81,7 @@ exports.create_inventoryitem_post = [
   }),
 ];
 
+/// !!! Not Yet implemented ///
 // @desc Delete an Inventory Item
 // @route GET /inventory/inventoryitem/:id/delete
 // @access Private
@@ -105,6 +107,7 @@ exports.delete_inventoryitem_post = asyncHandler(async (req, res, next) => {
   }
 });
 
+/// !!! Not Yet implemented ///
 // @desc Update an Inventory Item
 // @route GET /inventory/inventoryitem/:id/update
 // @access Private
@@ -112,6 +115,7 @@ exports.update_inventoryitem_get = (req, res, next) => {
   res.send("Update Inventory Item not yet implemented");
 };
 
+/// !!! Not Yet implemented ///
 // @desc Update an Inventory Item
 // @route POST /inventory/inventoryitem/:id/update
 // @access Private

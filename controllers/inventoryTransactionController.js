@@ -32,6 +32,7 @@ exports.inventorytransaction_detail = asyncHandler(async (req, res, next) => {
   }
 });
 
+/// !!! Not Yet implemented ///
 // @desc Render the form for creating a new Inventory Transaction
 // @route GET /inventory/inventorytransaction/create
 // @access Private
@@ -89,6 +90,7 @@ exports.create_inventorytransaction_post = [
   }),
 ];
 
+/// !!! Not Yet implemented ///
 // @desc Delete an Inventory Transaction
 // @route GET /inventory/inventorytransaction/:id/delete
 // @access Private
@@ -119,6 +121,7 @@ exports.delete_inventorytransaction_post = asyncHandler(
   }
 );
 
+/// !!! Not Yet implemented ///
 // @desc Update an Inventory Transaction
 // @route GET /inventory/inventorytransaction/:id/update
 // @access Private
