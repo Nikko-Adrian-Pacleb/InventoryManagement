@@ -119,6 +119,43 @@ exports.update_inventoryitem_get = (req, res, next) => {
 // @desc Update an Inventory Item
 // @route POST /inventory/inventoryitem/:id/update
 // @access Private
-exports.update_inventoryitem_post = (req, res, next) => {
-  res.send("Update Inventory Item not yet implemented");
-};
+exports.update_inventoryitem_post = [
+  // Validate and Sanitize fields
+  body("itemName")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Item Name must be specified"),
+  body("itemCode")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Item Code must be specified"),
+  body("itemCost")
+    .trim()
+    .escape()
+    .isNumeric()
+    .withMessage("Item cost must be a number"),
+  body("itemDescription").optional().isString().trim().escape(),
+  body("currentCount").optional().isNumeric(),
+  body("tags").optional().isArray(),
+
+  // Process request after validation and sanitazion
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      // Create a new Inventory Object with the escaped and trimmed data
+      // Add ID
+      req.body._id = req.params.id;
+      const updateItem = new InventoryItem(req.body);
+      await InventoryItem.findByIdAndUpdate(req.params.id, updateItem);
+      res.redirect(`/inventory/inventoryitem/${req.params.id}`);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }),
+];
